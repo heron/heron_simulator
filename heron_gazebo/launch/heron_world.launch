@@ -1,0 +1,26 @@
+<launch>
+
+  <arg name="world_pkg" default="uuv_descriptions" />
+  <arg name="world_pkg_file" default="ocean_waves.launch" />
+  <arg name="world_file" default="0" />
+  <arg name="use_pkg_path" default="1" />
+
+  <arg name="hydro_debug" default="0" />
+  <arg name="config" default="base" />
+
+  <arg name="namespace" default="heron" />
+
+  <!-- Launch a world file using an absolute file path -->
+  <group unless="$(arg use_pkg_path)">
+    <include file="$(arg world_file)" />
+  </group>
+
+  <!-- Launch a world file from the launch folder of a package -->
+  <group if="$(arg use_pkg_path)">
+    <include file="$(eval find(arg('world_pkg')) + '/launch/' + arg('world_pkg_file'))" />
+  </group>
+
+  <!-- Start simulating a Heron -->
+  <include file="$(find heron_gazebo)/launch/heron_sim.launch" />
+
+</launch>
