@@ -165,12 +165,3 @@ At line 203 of *uuv_simulator/uuv_gazebo_plugins/uuv_gazebo_plugins/src/BuoyantO
 In general, the simulation doesn't do well with the vessels outside of the water. For example, the water damping forces are the identical even if the vessel is not touching the water. Since the Heron can't fly, this was assumed to be an unimportant issue.
 
 This problem should be fixe21.28d but has a tendency to return: The Gazebo tool to apply force/torque can be used, however a large enough force/torque may cause the simulation to crash. This is due to the damping force and Heron's velocity getting caught in an "amplifying loop". That is, the Heron's velocity results in a strong damping force that causes an even larger velocity which results in a stronger damping force, etc. To fix this, reduce the damping force coefficients of the offending axis to near-zero. Then slowly increase the coefficients until the simulation is acting appropriately.
-
-
-## Changes to make to heron_control:
-
-remove first slash in:  
-/gps/fix @ control.launch  
-/navsat/fix @ control.launch  
-/odometry/gps @ robot_localization.yaml   
-/imu/data @ robot_localization.yaml  
