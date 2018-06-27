@@ -45,15 +45,10 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
     <!-- Translates /cmd_drive message to thrusters/*/input commands -->
     <node pkg="heron_gazebo" type="cmd_drive_translate.py" name="cmd_drive_to_thrusters" />
 
-    <!-- Script to calibrate the magnetometer and publish the raw values as Vector3Stamped -->
-    <include file="$(find heron_base)/launch/cal.launch" />
-    <node pkg="heron_gazebo" type="mag_interpreter.py" name="mag_interpreter">
-       <param name="~soft_iron_bias" value="[0.03225,0,0,0,-0.03225,0,0,0,0.25]" />
-    </node>
-
     <!-- Filter for Imu message -->
     <node pkg="imu_filter_madgwick" type="imu_filter_node" name="imu_filter_madgwick">
-      <param name="~use_magnetic_field_msg" value="true" />
+      <param name="~use_magnetic_field_msg" value="false" />
+      <param name="~use_mag" value="true" />
       <param name="world_frame" value="enu" />
       <param name="publish_debug_topics" value="true" />
       <param name="~publish_tf" value="false" />
