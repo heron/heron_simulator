@@ -70,11 +70,13 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
     <!-- Server for RViz Interactive Markers -->
     <node pkg="interactive_marker_twist_server" type="marker_server" name="twist_marker_server">
      <param name="link_name" value="$(arg namespace)/base_link" />
-     <remap from="twist_marker_server/cmd_vel" to="interactive_wrench" />
+     <remap from="twist_marker_server/cmd_vel" to="cmd_vel_unscaled" />
     </node>
 
     <!-- Translate Twist message from twist_server to Wrench message -->
-    <node pkg="heron_gazebo" type="twist_translate.py" name="twist_translate" />
+    <node pkg="heron_gazebo" type="twist_translate.py" name="twist_translate">
+	<rosparam file="$(find heron_controller)/config/heron_controller.yaml" />
+    </node>
   </group>
 
 
