@@ -24,21 +24,22 @@
 
 import rospy
 from geometry_msgs.msg import Twist
-from geometry_msgs.msg import Wrench
 from geometry_msgs.msg import Vector3
 
 def twist_cb(msg):
     global twist_msg
     global received
+    global max_fvel
+    global max_bvel
 
     twist_msg = msg
 
     if (twist_msg.linear.x < 0):
-        twist_msg.linear.x = twist_msg.linear.x * 40
+        twist_msg.linear.x = twist_msg.linear.x * max_bvel
     else:
-        twist_msg.linear.x = twist_msg.linear.x * 70
+        twist_msg.linear.x = twist_msg.linear.x * max_fvel
 
-    twist_msg.angular.z *= 29
+    twist_msg.angular.z *= 14
 
     received = True
 
@@ -46,38 +47,44 @@ def twist_cb(msg):
 def translate():
     global twist_msg
     global received
+    global max_fvel
+    global max_bvel
 
     rospy.init_node("twist_translator")
 
     received = False
     zero_message_sent = False
 
-    twist_sub = rospy.Subscriber("interactive_wrench", Twist, twist_cb)
-    wrench_pub = rospy.Publisher("cmd_wrench", Wrench, queue_size=1)
+    twist_sub = rospy.Subscriber("cmd_vel_unscaled", Twist, twist_cb)
+    scaled_pub = rospy.Publisher("cmd_vel", Twist, queue_size=1)
+
+    if (rospy.has_param("~max/fwd_vel")):
+        max_fvel = rospy.get_param("~max/fwd_vel")
+    else:
+        max_fvel = 4
+
+    if (rospy.has_param("~max/bck_vel")):
+        max_bvel = rospy.get_param("~max/bck_vel")
+    else:
+        max_bvel = 0.5
 
     # Ensure thrusters start at zero
     rospy.sleep(3)
-    new_msg = Wrench()
-    new_msg.force = Vector3(0, 0, 0)
-    new_msg.torque = Vector3(0, 0, 0)
-    wrench_pub.publish(new_msg)
+    twist_msg = Twist()
+    twist_msg.linear = Vector3(0, 0, 0)
+    twist_msg.angular = Vector3(0, 0, 0)
 
     r = rospy.Rate(5)
     while not rospy.is_shutdown():
-        new_msg = Wrench()
-        new_msg.force = Vector3(0, 0, 0)
-        new_msg.torque = Vector3(0, 0, 0)
-
         if received:
-            new_msg.force = twist_msg.linear;
-            new_msg.torque = twist_msg.angular;
             received = False
             zero_message_sent = False
-            wrench_pub.publish(new_msg);
+            scaled_pub.publish(twist_msg);
         elif not zero_message_sent:
-            wrench_pub.publish(new_msg);
+            scaled_pub.publish(twist_msg);
             zero_message_sent = True
 
+        twist_msg = Twist()
         r.sleep()
 
 if __name__ == '__main__':

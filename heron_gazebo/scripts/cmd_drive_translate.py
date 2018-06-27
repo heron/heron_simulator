@@ -33,7 +33,6 @@ def cmd_drive_callback(drive):
     send = FloatStamped()
     send.header.stamp = rospy.Time.now()
 
-    rospy.loginfo("Publishing!")
     send.data = drive.left
     p_left.publish(send)
 
@@ -51,8 +50,6 @@ def translate():
 
     rospy.spin()
 
-print "sfdsf"
 if __name__ == '__main__':
     rospy.init_node("cmd_drive_to_thrusters")
-    rospy.loginfo("Publishing!")
     translate()
