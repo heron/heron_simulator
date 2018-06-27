@@ -7,7 +7,6 @@ catkin_package()
 
 catkin_install_python(PROGRAMS
    scripts/cmd_drive_translate.py
- 	 scripts/mag_interpreter.py
  	 scripts/rpy_translator.py
 	 scripts/twist_translate.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
