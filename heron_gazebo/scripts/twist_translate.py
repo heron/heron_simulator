@@ -39,7 +39,7 @@ def twist_cb(msg):
     else:
         twist_msg.linear.x = twist_msg.linear.x * max_fvel
 
-    twist_msg.angular.z *= 14
+    twist_msg.angular.z *= 0.5
 
     received = True
 
