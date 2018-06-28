@@ -31,8 +31,11 @@ def vec_cb(msg):
     global twist_pub
 
     twst = TwistStamped()
+    twst.twist.linear.x = -msg.vector.y
+    twst.twist.linear.y = msg.vector.x
+    twst.twist.linear.z = msg.vector.z
+
     twst.header = msg.header
-    twst.twist.linear = msg.vector
     twst.twist.angular = Vector3(0, 0, 0)
 
     twist_pub.publish(twst)
