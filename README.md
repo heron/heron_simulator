@@ -40,6 +40,10 @@ Using ```PACKAGE_CONTAINING_WORLD=uuv_descriptions```, there are pre-made worlds
 
 **Note: ** "empty_underwater_world" and "herkules_ship_wreck" have very dark oceans, making them difficult to use.
 
+Starting the Heron in any configuration that results in immediate acceleration upon spawn will interfere with the IMU initialization (see Known Issues), so only the x, y, and yaw of the starting location of the Heron can be changed:
+
+```roslaunch heron_gazebo heron_[sim/world].launch x:=[X_METRES] y:=[Y_METRES] yaw:=[YAW_RADIANS]```
+
 To create your own world file, follow these instructions:  https://uuvsimulator.github.io/tutorials/seabed_world.html
 
 ## Control
@@ -48,7 +52,9 @@ The Heron is controlled used interactive markers in RViz. One control drives the
 
 Most recommended is the Heron's base frame: *[namespace]/base_link*. However, the Heron's world location won't be shown. If this location must be seen, the frame *[namespace]/odom* can be used but will have the Heron's location constantly fluctuating (due to the GPS updates) which can be hard to use.
 
-When simulating multiple Herons, their transform frames are connected via the *utm* frame. Technically, this frame could be used to visualize the Herons but, due to its globalness, it can be difficult to find the Herons in the visualization. Regardless, when controlling a Heron from its *[namespace]/base_link* frame, you can visualize and control the other Herons.
+When simulating multiple Herons, their transform frames are connected via the *utm* frame. Technically, this frame could be used to visualize the Herons but, due to its globalness, it can be difficult to find the Herons in the visualization.
+
+In any transform frame, all the Heron's can be controlled via RViz. You will have to add RobotModel and InteractiveMarker to RViz for each Heron.
 
 ## Topics
 
@@ -63,9 +69,7 @@ Due to using the *heron* namespace, a change was made to the *heron_bringup* pac
 
 ## Sensors
 
-The Heron has two primary sensors: GPS and IMU. The simulated IMU represents the ADIS16448 IMU. The magnetometer is simulated separately from the IMU (although it publishes under the "imu" prefix) and represents the Bosch BMX055 sensor.
-
-GPS Sensor output is multiplied by "-1" so as to make Latitude increase as the Heron swims North and Longitude increase as the Heron swims East.
+The Heron has two primary sensors: GPS and IMU. The simulation uses the corresponding libhector plugins as well as the magnetometer plugin.
 
 When calibrating the magnetometer (using the *calibrate_compass* script in *heron_bringup* package), the environment variable ROBOT_NAMESPACE must be set to the robot's namespace.
 
@@ -85,6 +89,9 @@ Since the EKF Sensor processing node does not expect the robot to teleport (i.e.
 |imu/mag_raw|Vector3Stamped|mag_interpreter.py|Raw Simulated Magnetometer data|
 |imu/mag|MagneticField|mag_interpreter.py|Calibrated Magnetometer data|
 |navsat/fix|NavSatFix|Gazebo|Raw Simulated GPS data|
+|navsat/velocity|Vector3Stamped|Gazebo|Simulated Velocity Data in NWU|
+|navsat/vel|TwistStamped|navsat_vel_translate.py|Simulated Velocity Data in ENU|
+|navsat/vel_cov|TwistWithCovarianceStamped|vel_cov.py|ENU Velocity Data with *approximate* Covariance|
 
 ## Hydrodynamics
 
@@ -93,7 +100,7 @@ To view the hydrodynamic forces acting on the Heron, add "hydro_debug:=1" as a p
 ### Buoyancy Forces
 The Heron's buoyancy forces are modelled using the Linear (Small Angle) Theory for Box-Shaped Vessels, described in section 4.2 of: http://www.fossen.biz/wiley/Ch4.pdf
 
-The metacentric heights were tuned rather than calculated. The Heron was measured/estimated to sit 0.06 metres into the water (i.e. the submerged_height parameter) without any extra weight.
+The metacentric heights were tuned rather than calculated. The Heron was measured/estimated to sit 0.02 metres into the water (i.e. the submerged_height parameter) without any extra weight.
 
 With the antennae, the Heron is technically 0.74 metres tall, but these antennae are neglibly small and this extra height would make the simulation much less precise when the Heron is submerged. So the Heron's height has been set to 0.32 metres (i.e. the height ignoring the antennae).
 
@@ -146,22 +153,22 @@ Nodes in *heron_gazebo/heron_sim.launch*:
 
   - The simulation expects thruster inputs as two different topics (*thrusters/0/input* and *thrusters/1/input* for right and left respectively). So *heron_sim.launch* also launches a script (*cmd_drive_translate.py*) that translates cmd_drive topic from heron_controller to these topics.
 
-  - The simulation publishes uncalibrated magnetometer values in NED frame. The IMU sensor driver would take care of this on the actual Heron, so there's a script (*mag_interpreter.py*) in *heron_sim.launch* calibrates the magnetometer values and transforms them to ENU.
+  - The IMU usually publishes a *imu/rpy* topic as well (important for magnetometer calibration) so a script (*rpy_translator.py*) in description.launch translates the quaternion in *imu/data* to the *imu/rpy* topic.
 
-  - The IMU usually publishes a *imu/rpy* topic as well (important for magnetometer calibration) so a script (*rpy_translator.py*) in description.launch translates the quaternion in *imu/data* to the *imu/rpy* topic
+  - The *interactive_marker_twist_server* node publishes a geometry_msgs/Twist message with the linear velocity ranging from -1 to 1 m/s and the angular velocity ranging from -2.2 to 2.2 rad/s. The script *twist_translate.py* scales the linear velocity according to the contents of *config/heron_controller.yaml* and the angular velocity from -1.1 to 1.1 rad/s.
 
-  - The *interactive_marker_twist_server* node publishes a geometry_msgs/Twist message but *heron_controller* expects a geometry_msgs/Wrench message. A script (*twist_translate.py*) scales and republishes the output of *interactive_marker_twist_server* with the Wrench message.
+  - The Gazebo GPS plugin publishes velocity information in a NorthWestUp configuration and a Vector3Stamped msg. A script (*navsat_vel_translate.py*) converts the velocity to ENU and as a TwistStamped message.
 
 ## Changes made to UUV Simulator
 
-One change has already been mentioned under the "Sensors" topic: the simulated GPS has its output multiplied by "-1".
-
 The other change was rewriting the calculation of how deep the Heron was currently submerged. This is found at Line 139 of HydrodynamicModel.cc (uuv_simulator/uuv_gazebo_plugins/uuuv_gazebo_plugins/src/HydrodynamicModel.cc). The old code is commented out directly below.
 
-At line 203 of *uuv_simulator/uuv_gazebo_plugins/uuv_gazebo_plugins/src/BuoyantObject.cc*, the buoyancy force was transformed to be relative to robot's frame of reference. This is contrary to the Gazebo documentation for *AddForceAtRelativePosition()* (which is what the force is sent to) but the simulation seems to work more accurately with this rotation being applied.
+At line 203 of *uuv_simulator/uuv_gazebo_plugins/uuv_gazebo_plugins/src/BuoyantObject.cc*, the buoyancy force was transformed. The "AddRelativeForce()" expects a force relative to the robot's frame of reference so the buoyancy force had to be transformed to be relative to the world's coordinate frame.
 
 ## Known Issues:
 
 In general, the simulation doesn't do well with the vessels outside of the water. For example, the water damping forces are the identical even if the vessel is not touching the water. Since the Heron can't fly, this was assumed to be an unimportant issue.
 
-This problem should be fixe21.28d but has a tendency to return: The Gazebo tool to apply force/torque can be used, however a large enough force/torque may cause the simulation to crash. This is due to the damping force and Heron's velocity getting caught in an "amplifying loop". That is, the Heron's velocity results in a strong damping force that causes an even larger velocity which results in a stronger damping force, etc. To fix this, reduce the damping force coefficients of the offending axis to near-zero. Then slowly increase the coefficients until the simulation is acting appropriately.
+This problem should be fixed but has a tendency to return: The Gazebo tool to apply force/torque can be used, however a large enough force/torque may cause the simulation to crash. This is due to the damping force and Heron's velocity getting caught in an "amplifying loop". That is, the Heron's velocity results in a strong damping force that causes an even larger velocity which results in a stronger damping force, etc. To fix this, reduce the damping force coefficients of the offending axis to near-zero. Then slowly increase the coefficients until the simulation is acting appropriately.
+
+When the Heron's IMU filter initializes, it requires the vessel to be floating on the water, fairly stationary. Therefore, spawning a Heron in the air or inside of another Heron will ruin the initialization. This causes the IMU data to be very incorrect for some time afterwards. Eventually, the data will correct itself and it may be quick but it also may be slow.
