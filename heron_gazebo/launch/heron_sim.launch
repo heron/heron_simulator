@@ -37,13 +37,15 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
   <arg name="pitch" value="0"/>
   <arg name="yaw"   default="0"/>
 
-  <arg name="namespace" default="heron"/>
+  <arg name="namespace" default=""/>
   <arg name="config" default="base" />
 
-  <group ns="$(arg namespace)">
+  <group ns="/$(arg namespace)">
 
     <!-- Translates /cmd_drive message to thrusters/*/input commands -->
-    <node pkg="heron_gazebo" type="cmd_drive_translate.py" name="cmd_drive_to_thrusters" />
+    <node pkg="heron_gazebo" type="cmd_drive_translate.py" name="cmd_drive_to_thrusters">
+      <param name="namespace" value="$(arg namespace)" />
+    </node>
 
     <!-- Filter for Imu message -->
     <node pkg="imu_filter_madgwick" type="imu_filter_node" name="imu_filter_madgwick">
@@ -52,7 +54,6 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
       <param name="world_frame" value="enu" />
       <param name="publish_debug_topics" value="true" />
       <param name="~publish_tf" value="false" />
-      <remap from="base_link" to="$(arg namespace)/base_link" />
     </node>
 
     <!-- Heron thruster controller -->
@@ -63,9 +64,17 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
     <!-- Translate Imu's quaternion to Roll/Pitch/Yaw -->
     <node pkg="heron_gazebo" type="rpy_translator.py" name="rpy_translator" />
 
-    <!-- Run a python script to the send a service call to gazebo_ros to spawn a URDF robot -->
-    <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
-          args="-urdf -x $(arg x) -y $(arg y) -z $(arg z) -R $(arg roll) -P $(arg pitch) -Y $(arg yaw) -model $(arg namespace) -param /$(arg namespace)/robot_description"/>
+    <group if="$(eval namespace == '')">
+      <!-- Run a python script to the send a service call to gazebo_ros to spawn a URDF robot -->
+      <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+            args="-urdf -x $(arg x) -y $(arg y) -z $(arg z) -R $(arg roll) -P $(arg pitch) -Y $(arg yaw) -model heron -param /robot_description"/>
+    </group>
+
+    <group unless="$(eval namespace == '')">
+      <!-- Run a python script to the send a service call to gazebo_ros to spawn a URDF robot -->
+      <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+            args="-urdf -x $(arg x) -y $(arg y) -z $(arg z) -R $(arg roll) -P $(arg pitch) -Y $(arg yaw) -model $(arg namespace) -param /$(arg namespace)/robot_description"/>
+    </group>
 
     <!-- Server for RViz Interactive Markers -->
     <node pkg="interactive_marker_twist_server" type="marker_server" name="twist_marker_server">
@@ -89,7 +98,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
   <rosparam param="/$(arg namespace)/ekf_localization_node/tf_prefix" subst_value="True">$(arg namespace)</rosparam>
   <rosparam param="/$(arg namespace)/navsat_transform_node/tf_prefix" subst_value="True">$(arg namespace)</rosparam>
   <rosparam param="/$(arg namespace)/navsat_transform_node/use_odometry_yaw">true</rosparam>
-  <include file="$(find heron_control)/launch/control.launch" ns="$(arg namespace)" />
+  <include file="$(find heron_control)/launch/control.launch" ns="/$(arg namespace)" />
 
   <!-- Launches Heron's description nodes -->
   <include file="$(find heron_description)/launch/description.launch">

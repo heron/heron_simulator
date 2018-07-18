@@ -43,8 +43,13 @@ def translate():
     global p_left
     global p_right
 
-    p_left = rospy.Publisher("thrusters/1/input", FloatStamped, queue_size=1)
-    p_right = rospy.Publisher("thrusters/0/input", FloatStamped, queue_size=1)
+    namespace = rospy.get_param("~namespace", "")
+
+    if namespace is "":
+        namespace = "heron"
+
+    p_left = rospy.Publisher("/" + namespace + "/thrusters/1/input", FloatStamped, queue_size=1)
+    p_right = rospy.Publisher("/" + namespace + "/thrusters/0/input", FloatStamped, queue_size=1)
 
     cmd_drive_sub = rospy.Subscriber("cmd_drive", Drive, cmd_drive_callback)
 

@@ -28,7 +28,7 @@ To do this, run the following commands in separate terminals:
 ```roslaunch heron_gazebo heron_sim.launch namespace:=heron2```  
 ..., etc.
 
-By default, the namespace is *heron*. Of course, you can name the namespaces anything you want.
+By default, the namespace is empty. Of course, you can name the namespaces anything you want.
 
 Using ```PACKAGE_CONTAINING_WORLD=uuv_descriptions```, there are pre-made worlds for ```WORLD_FILE```:
   - ocean_waves.launch
@@ -58,13 +58,13 @@ In any transform frame, all the Heron's can be controlled via RViz. You will hav
 
 ## Topics
 
-All topics and transform frames were put under the *heron* namespace to allow for multiple robots in a single simulation without interference.
+When running the simulation, a custom namespace can be set to prefix all the transform frames and topic names. An empty namespace can be used however, when using an empty namespace, the thruster topics used by *uuv_simulator* will be placed under the *heron* namespace. This means that an empty namespace and a *heron* namespace cannot be used at the same time.
 
-The simulated Heron uses the same control topics as the actual Heron. Simulation uses the heron_controller package to control itself.
-  - Simply publish on the */heron/cmd_course*, */heron/cmd_wrench*, */heron/cmd_helm* to use it
-  - To publish directly to the thrusters, publish on */heron/cmd_drive*
+The simulated Heron uses the same control topics as the actual Heron. Simulation uses the heron_controller package to control itself. Prefix the topic names below with the simulation's custom namespace.
+  - Simply publish on the *cmd_course*, *cmd_wrench*, *cmd_helm* to use it
+  - To publish directly to the thrusters, publish on *cmd_drive*
 
-Due to using the *heron* namespace, a change was made to the *heron_bringup* package:
+Due to using a custom namespace, a change was made to the *heron_bringup* package:
   - Only difference can be found in the calibrate_compass script, to use the correct topics
 
 ## Sensors
