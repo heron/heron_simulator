@@ -45,8 +45,8 @@ def translate_navvel():
 
     rospy.init_node("navvel_translator")
 
-    vec_sub = rospy.Subscriber("navsat/velocity", Vector3Stamped, vec_cb)
     twist_pub = rospy.Publisher("navsat/vel", TwistStamped, queue_size=1)
+    vec_sub = rospy.Subscriber("navsat/velocity", Vector3Stamped, vec_cb)
 
     rospy.spin()
 

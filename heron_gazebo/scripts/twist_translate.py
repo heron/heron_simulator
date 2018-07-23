@@ -53,7 +53,7 @@ def translate():
     rospy.init_node("twist_translator")
 
     received = False
-    zero_message_sent = False
+    zero_message_sent = True
 
     twist_sub = rospy.Subscriber("cmd_vel_unscaled", Twist, twist_cb)
     scaled_pub = rospy.Publisher("cmd_vel", Twist, queue_size=1)
@@ -71,8 +71,6 @@ def translate():
     # Ensure thrusters start at zero
     rospy.sleep(3)
     twist_msg = Twist()
-    twist_msg.linear = Vector3(0, 0, 0)
-    twist_msg.angular = Vector3(0, 0, 0)
 
     r = rospy.Rate(5)
     while not rospy.is_shutdown():
