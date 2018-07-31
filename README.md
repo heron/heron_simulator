@@ -2,11 +2,14 @@
 
 ## Installation
 
-In your catkin workspace, run the command:  
-```git clone https://github.com/uuvsimulator/uuv_simulator```    
+Use the instructions for ROS Kinetic and Gazebo 7 at the following link:   
+https://uuvsimulator.github.io/installation.html
+
+
+Then in your catkin workspace, run the command:  
 ```git clone https://github.com/heron/heron_simulator```
 
-Then build your workspace and you're ready to run the simulation!
+Build your workspace and you're ready to run the simulation!
 
 ## Running the Simulation
 
