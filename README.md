@@ -164,12 +164,6 @@ Nodes in *heron_gazebo/heron_sim.launch*:
 
   - The Gazebo GPS plugin publishes velocity information in a NorthWestUp configuration and a Vector3Stamped msg. A script (*navsat_vel_translate.py*) converts the velocity to ENU and as a TwistStamped message.
 
-## Changes made to UUV Simulator
-
-The other change was rewriting the calculation of how deep the Heron was currently submerged. This is found at Line 139 of HydrodynamicModel.cc (uuv_simulator/uuv_gazebo_plugins/uuuv_gazebo_plugins/src/HydrodynamicModel.cc). The old code is commented out directly below.
-
-At line 203 of *uuv_simulator/uuv_gazebo_plugins/uuv_gazebo_plugins/src/BuoyantObject.cc*, the buoyancy force was transformed. The "AddRelativeForce()" expects a force relative to the robot's frame of reference so the buoyancy force had to be transformed to be relative to the world's coordinate frame.
-
 ## Known Issues:
 
 In general, the simulation doesn't do well with the vessels outside of the water. For example, the water damping forces are the identical even if the vessel is not touching the water. Since the Heron can't fly, this was assumed to be an unimportant issue.
