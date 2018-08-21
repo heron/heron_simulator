@@ -7,9 +7,11 @@ https://uuvsimulator.github.io/installation.html
 
 
 Then in the src folder of your catkin workspace, run the commands:  
-```git clone https://github.com/heron/heron_simulator```  
-```cd ..```  
-```rosdep install --from-paths src --ignore-src --rosdistro=kinetic -yr```
+  ```
+git clone https://github.com/heron/heron_simulator  
+cd ..
+rosdep install --from-paths src --ignore-src --rosdistro=kinetic -yr
+  ```
 
 Build your workspace and you're ready to run the simulation!
 
@@ -27,11 +29,13 @@ If an absolute file path must be provided:
 Optionally, multiple Heron USVs can be simulated at the same time, as long as each robot is under a unique namespace.
 
 To do this, run the following commands in separate terminals:  
-```roslaunch [PACKAGE_CONTAINING_WORLD] [WORLD_LAUNCH_FILE]```  
-```roslaunch heron_gazebo heron_sim.launch```  
-```roslaunch heron_gazebo heron_sim.launch namespace:=heron1```  
-```roslaunch heron_gazebo heron_sim.launch namespace:=heron2```  
+```
+roslaunch [PACKAGE_CONTAINING_WORLD] [WORLD_LAUNCH_FILE]
+roslaunch heron_gazebo heron_sim.launch
+roslaunch heron_gazebo heron_sim.launch namespace:=heron1  
+roslaunch heron_gazebo heron_sim.launch namespace:=heron2  
 ..., etc.
+```
 
 By default, the namespace is empty. Of course, you can name the namespaces anything you want.
 
@@ -49,8 +53,6 @@ Starting the Heron in any configuration that results in immediate acceleration u
 
 ```roslaunch heron_gazebo heron_[sim/world].launch x:=[X_METRES] y:=[Y_METRES] yaw:=[YAW_RADIANS]```
 
-To create your own world file, follow these instructions:  https://uuvsimulator.github.io/tutorials/seabed_world.html
-
 ## Control
 
 The Heron is controlled used interactive markers in RViz. One control drives the Heron forward/backward. The other control causes rotation. There are quite a number of transform frames from which to control the Heron.
@@ -59,26 +61,23 @@ Most recommended is the Heron's base frame: *[namespace]/base_link*. However, th
 
 When simulating multiple Herons, their transform frames are connected via the *utm* frame. Technically, this frame could be used to visualize the Herons but, due to its globalness, it can be difficult to find the Herons in the visualization.
 
-In any transform frame, all the Heron's can be controlled via RViz. You will have to add RobotModel and InteractiveMarker to RViz for each Heron.
+In any transform frame, all the Herons can be controlled via RViz. You will have to add RobotModel and InteractiveMarker to RViz for each Heron.
 
 ## Topics
 
-When running the simulation, a custom namespace can be set to prefix all the transform frames and topic names. An empty namespace can be used however, when using an empty namespace, the thruster topics used by *uuv_simulator* will be placed under the *heron* namespace. This means that an empty namespace and a *heron* namespace cannot be used at the same time.
+When running the simulation, a custom namespace can be set to prefix all the transform frames and topic names. An empty namespace can be used but, when doing so, the thruster topics used by *uuv_simulator* will be placed under the *heron* namespace. This means that an empty namespace and a *heron* namespace cannot be used at the same time.
 
 The simulated Heron uses the same control topics as the actual Heron. Simulation uses the heron_controller package to control itself. Prefix the topic names below with the simulation's custom namespace.
   - Simply publish on the *cmd_course*, *cmd_wrench*, *cmd_helm* to use it
   - To publish directly to the thrusters, publish on *cmd_drive*
 
-Due to using a custom namespace, a change was made to the *heron_bringup* package:
-  - Only difference can be found in the calibrate_compass script, to use the correct topics
-
 ## Sensors
 
-The Heron has two primary sensors: GPS and IMU. The simulation uses the corresponding libhector plugins as well as the magnetometer plugin.
+The Heron has two primary sensors: GPS and IMU. The simulation uses the corresponding hector_gazebo plugins as well as the magnetometer plugin.
 
 When calibrating the magnetometer (using the *calibrate_compass* script in *heron_bringup* package), the environment variable ROBOT_NAMESPACE must be set to the robot's namespace.
 
-Since the EKF Sensor processing node does not expect the robot to teleport (i.e. have its pose drastically change abruptly), the Heron's odometry will lag behind if you move the Heron using Gazebo's move/rotate tools.
+Since the EKF Sensor processing node does not expect the robot to teleport (i.e. have its pose drastically change suddenly), the Heron's odometry will lag behind if you move the Heron using Gazebo's move/rotate tools.
 
 ### Sensor Topics:
 
@@ -116,7 +115,7 @@ The damping forces are modelled as quasi-quadratic. For each axis, where "Q" is 
 
 Damping force coefficients were manually tuned to produce an accurate simulation, not calculated based off of real-world measurements.
 
-The Gazebo tool to apply force/torque can be used, however a large enough force/torque may cause the simulation to crash. This is due to the damping force and Heron's velocity getting caught in an "amplifying loop". That is, the Heron's velocity results in a strong damping force that causes an even larger velocity which results in a stronger damping force, etc. To fix this, reduce the damping force coefficients of the offending axis to near-zero. Then slowly increase the coefficients until the simulation is acting appropriately. This problem should be fixed, but has a tendency to return for unknown reasons.
+The Gazebo tool to apply force/torque can be used, however a large enough force/torque may cause the simulation to crash. This is due to the damping force and Heron's velocity getting caught in an "amplifying loop". That is, the Heron's velocity results in a strong damping force that causes an even larger velocity which results in a stronger damping force, etc. To fix this, reduce the damping force coefficients of the offending axis to near-zero. Then slowly increase the coefficients until the simulation is acting appropriately. The simulator should no longer have this issue but the problem has a confusing tendency to return.
 
 ### Thrust Forces
 
@@ -163,6 +162,10 @@ Nodes in *heron_gazebo/heron_sim.launch*:
   - The *interactive_marker_twist_server* node publishes a geometry_msgs/Twist message with the linear velocity ranging from -1 to 1 m/s and the angular velocity ranging from -2.2 to 2.2 rad/s. The script *twist_translate.py* scales the linear velocity according to the contents of *config/heron_controller.yaml* and the angular velocity from -1.1 to 1.1 rad/s.
 
   - The Gazebo GPS plugin publishes velocity information in a NorthWestUp configuration and a Vector3Stamped msg. A script (*navsat_vel_translate.py*) converts the velocity to ENU and as a TwistStamped message.
+
+## Creating custom worlds
+
+Custom worlds can be created using the *heron_worlds* package. All that's needed is a 3D file (currently only STL has been tested) that represents the seabed and coastline of the environment.
 
 ## Known Issues:
 
