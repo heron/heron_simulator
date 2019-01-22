@@ -13,17 +13,7 @@ cd ..
 rosdep install --from-paths src --ignore-src --rosdistro=kinetic -yr
   ```
 
-Also ensure you have the following packages cloned into your src folder: heron, heron_controller, heron_desktop, and imu_tools. These packages can be found on Github:
-
-https://github.com/heron/heron
-
-https://github.com/heron/heron_desktop
-
-https://github.com/heron/heron_controller
-
-https://github.com/ccny-ros-pkg/imu_tools/tree/kinetic
-
-For all these packages, ensure the branch you clone correponds to your specific ROS distribution. Build your workspace and you're ready to run the simulation!
+Also ensure you have the following packages in your src folder: heron, heron_controller, heron_desktop, and imu_tools. Build your workspace and you're ready to run the simulation!
 
 ## Running the Simulation
 
