@@ -25,7 +25,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 -->
 <launch>
 
-  <arg name="world_pkg" default="uuv_descriptions" />
+  <arg name="world_pkg" default="uuv_gazebo_worlds" />
   <arg name="world_pkg_file" default="ocean_waves.launch" />
   <arg name="world_file" default="0" />
   <arg name="use_pkg_path" default="1" />

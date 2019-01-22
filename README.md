@@ -13,14 +13,14 @@ cd ..
 rosdep install --from-paths src --ignore-src --rosdistro=kinetic -yr
   ```
 
-Build your workspace and you're ready to run the simulation!
+Also ensure you have the following packages in your src folder: heron, heron_controller, heron_desktop, and imu_tools. Build your workspace and you're ready to run the simulation!
 
 ## Running the Simulation
 
-To simulate the Heron and the world, run the following command:  
+To simulate the Heron and the world, run the following command:
 ```roslaunch heron_gazebo heron_world.launch```
 
-The simulation can be set to change what world it launches. If the launch file is contained within the launch folder of a package (as it usually is), the following commmand must be run:  
+The simulation can be set to change what world it launches. If the launch file is contained within the launch folder of a package (as it usually is), the following commmand must be run:
 ```roslaunch heron_gazebo heron_world.launch world_pkg:=[PACKAGE] world_pkg_file:=[WORLD_FILE]```  
 
 If an absolute file path must be provided:  
