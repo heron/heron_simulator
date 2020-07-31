@@ -6,8 +6,11 @@ find_package(catkin REQUIRED)
 catkin_package()
 
 catkin_install_python(PROGRAMS
-   scripts/cmd_drive_translate.py
- 	 scripts/rpy_translator.py
-	 scripts/twist_translate.py
+   scripts/activate_control_service
+   scripts/cmd_drive_translate
+   scripts/navsat_vel_translate
+   scripts/rpy_translator
+   scripts/twist_translate
+   scripts/vector3_to_magnetic_field
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

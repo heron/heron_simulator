@@ -43,13 +43,21 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
   <group ns="/$(arg namespace)">
 
     <!-- Translates /cmd_drive message to thrusters/*/input commands -->
-    <node pkg="heron_gazebo" type="cmd_drive_translate.py" name="cmd_drive_to_thrusters">
+    <node pkg="heron_gazebo" type="cmd_drive_translate" name="cmd_drive_to_thrusters">
       <param name="namespace" value="$(arg namespace)" />
     </node>
 
     <!-- Filter for Imu message -->
+    <!--
+      The filter needs MagneticField messages, so start a node to translate from the Vector3Stamped messages
+      provided by the plugin
+    -->
+    <node pkg="heron_gazebo" type="vector3_to_magnetic_field" name="mag_translation">
+      <param name="mag_in"    value="/imu/mag_raw" />
+      <param name="mag_out"   value="/imu/mag" />
+    </node>
     <node pkg="imu_filter_madgwick" type="imu_filter_node" name="imu_filter_madgwick">
-      <param name="~use_magnetic_field_msg" value="false" />
+      <param name="~use_magnetic_field_msg" value="true" />
       <param name="~use_mag" value="true" />
       <param name="world_frame" value="enu" />
       <param name="publish_debug_topics" value="true" />
@@ -62,7 +70,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
     </node>
 
     <!-- Translate Imu's quaternion to Roll/Pitch/Yaw -->
-    <node pkg="heron_gazebo" type="rpy_translator.py" name="rpy_translator" />
+    <node pkg="heron_gazebo" type="rpy_translator" name="rpy_translator" />
 
     <group if="$(eval namespace == '')">
       <!-- Run a python script to the send a service call to gazebo_ros to spawn a URDF robot -->
@@ -83,15 +91,15 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
     </node>
 
     <!-- Translate Twist message from twist_server to Wrench message -->
-    <node pkg="heron_gazebo" type="twist_translate.py" name="twist_translate">
+    <node pkg="heron_gazebo" type="twist_translate" name="twist_translate">
 	     <rosparam file="$(find heron_gazebo)/config/heron_controller.yaml" />
        <param name="cov_limits/velocity" value="0.01" />
     </node>
 
     <!-- Translates navsat/velocity from Vector3Stamped to TwistStamped on navsat/vel -->
-    <node pkg="heron_gazebo" type="navsat_vel_translate.py" name="navvel_translate" />
+    <node pkg="heron_gazebo" type="navsat_vel_translate" name="navvel_translate" />
 
-    <node pkg="heron_gazebo" type="activate_control_service.py" name="activate_control_service" />
+    <node pkg="heron_gazebo" type="activate_control_service" name="activate_control_service" />
 
   </group>
 
