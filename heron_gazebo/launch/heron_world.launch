@@ -24,30 +24,60 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCL
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <launch>
-
-  <arg name="world_pkg" default="uuv_gazebo_worlds" />
-  <arg name="world_pkg_file" default="ocean_waves.launch" />
-  <arg name="world_file" default="0" />
-  <arg name="use_pkg_path" default="1" />
-
-  <arg name="hydro_debug" default="0" />
-  <arg name="config" default="base" />
-
   <arg name="x"     default="0"/>
   <arg name="y"     default="0"/>
   <arg name="yaw"   default="0"/>
 
+  <arg name="gui" default="true"/>
+  <arg name="paused" default="false"/>
+  <arg name="set_timeout" default="false"/>
+  <arg name="timeout" default="0.0"/>
+
   <arg name="namespace" default="" />
 
-  <!-- Launch a world file using an absolute file path -->
-  <group unless="$(arg use_pkg_path)">
-    <include file="$(arg world_file)" />
-  </group>
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" value="$(find heron_gazebo)/worlds/ocean_surface.world"/>
+        <arg name="paused" value="$(arg paused)"/>
+        <arg name="use_sim_time" value="true"/>
+        <arg name="gui" value="$(arg gui)"/>
+        <arg name="headless" value="false"/>
+        <arg name="debug" value="false"/>
+        <arg name="verbose" value="true"/>
+    </include>
 
-  <!-- Launch a world file from the launch folder of a package -->
-  <group if="$(arg use_pkg_path)">
-    <include file="$(eval find(arg('world_pkg')) + '/launch/' + arg('world_pkg_file'))" />
-  </group>
+    <include file="$(find uuv_assistants)/launch/publish_world_ned_frame.launch"/>
+
+    <node name="publish_world_models"
+        pkg="uuv_assistants"
+        type="publish_world_models.py"
+        output="screen">
+        <rosparam subst_value="true">
+            meshes:
+                heightmap:
+                    mesh: package://uuv_gazebo_worlds/models/sand_heightmap/meshes/heightmap.dae
+                    model: sand_heightmap
+                seafloor:
+                    plane: [2000, 2000, 0.1]
+                    pose:
+                        position: [0, 0, -100]
+                north:
+                    plane: [0.1, 2000, 100]
+                    pose:
+                        position: [1000, 0, -50]
+                south:
+                    plane: [0.1, 2000, 100]
+                    pose:
+                        position: [-1000, 0, -50]
+                west:
+                    plane: [2000, 0.1, 100]
+                    pose:
+                        position: [0, -1000, -50]
+                east:
+                    plane: [2000, 0.1, 100]
+                    pose:
+                        position: [0, 1000, -50]
+        </rosparam>
+    </node>
 
   <!-- Start simulating a Heron -->
   <include file="$(find heron_gazebo)/launch/heron_sim.launch">
