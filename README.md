@@ -3,7 +3,7 @@
 ## Installation
 
 Use the instructions for ROS Kinetic and Gazebo 7 at the following link:   
-https://uuvsimulator.github.io/installation.html
+https://uuvsimulator.github.io/installation/
 
 
 Then in the src folder of your catkin workspace, run the commands:  
