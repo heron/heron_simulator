@@ -2,8 +2,8 @@
 Changelog for package heron_gazebo
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.0 (2020-09-17)
+------------------
 * Add the UUV worlds dependency
 * Rename "heron_sim" to "spawn_heron" for compatibility with the new simulation environments
 * Tidy up the lake world a little, set the camera position so the initial view is a little nicer
