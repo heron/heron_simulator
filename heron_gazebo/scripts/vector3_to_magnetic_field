@@ -17,7 +17,7 @@ def on_mag_recv(data, node):
     node.on_mag_data(data)
 
 class Vector3Stamped_to_MagneticField_node:
-    def __init__(self, node, mag_in='/imu/mag_raw', mag_out='/imu/mag'):
+    def __init__(self, node, mag_in='mag_in', mag_out='mag_out'):
         self.node = node
         self.mag_out = rospy.Publisher(mag_out, MagneticField, queue_size=10)
         self.mag_in = rospy.Subscriber(mag_in, Vector3Stamped, on_mag_recv, self)
@@ -34,11 +34,7 @@ class Vector3Stamped_to_MagneticField_node:
 def vector3_to_magneticField():
     node = rospy.init_node('vector3_to_magneticField', anonymous=True)
 
-    # get the parameters
-    mag_in= rospy.get_param('~mag_in')
-    mag_out = rospy.get_param('~mag_out')
-
-    controller = Vector3Stamped_to_MagneticField_node(node, mag_in, mag_out)
+    controller = Vector3Stamped_to_MagneticField_node(node, 'mag_in', 'mag_out')
 
     rospy.spin()
 
