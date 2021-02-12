@@ -2,6 +2,16 @@
 Changelog for package heron_gazebo
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge pull request `#11 <https://github.com/heron/heron_simulator/issues/11>`_ from heron/thruster-fix
+  Enable thruster joints in simulation
+* Enable the simulation argument so the thrusters are mobile & allow the robot to move
+* Merge pull request `#10 <https://github.com/heron/heron_simulator/issues/10>`_ from heron/namespace-fix
+  Fix namespace preventing the EKF node from working
+* Use remap instead of rosparams to set the topics for the mag topic translator. This allows the node to work correctly when the namespace argument is set.
+* Contributors: Chris Iverach-Brereton, Tony Baltovski
+
 0.3.0 (2020-09-17)
 ------------------
 * Add the UUV worlds dependency
