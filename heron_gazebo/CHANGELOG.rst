@@ -2,8 +2,8 @@
 Changelog for package heron_gazebo
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.1 (2021-02-12)
+------------------
 * Merge pull request `#11 <https://github.com/heron/heron_simulator/issues/11>`_ from heron/thruster-fix
   Enable thruster joints in simulation
 * Enable the simulation argument so the thrusters are mobile & allow the robot to move
