@@ -2,6 +2,12 @@
 Changelog for package heron_gazebo
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Bumped CMake version to avoid author warning.
+* Add the config, launch, and worlds folders to the install target
+* Contributors: Chris Iverach-Brereton, Tony Baltovski
+
 0.3.1 (2021-02-12)
 ------------------
 * Merge pull request `#11 <https://github.com/heron/heron_simulator/issues/11>`_ from heron/thruster-fix
