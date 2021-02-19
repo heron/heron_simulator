@@ -2,8 +2,8 @@
 Changelog for package heron_simulator
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.2 (2021-02-19)
+------------------
 * Bumped CMake version to avoid author warning.
 * Contributors: Tony Baltovski
 
