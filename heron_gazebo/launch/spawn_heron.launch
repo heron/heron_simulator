@@ -112,9 +112,10 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 
   <!-- Launches Heron's description nodes -->
   <include file="$(find heron_description)/launch/description.launch">
-    <arg name="namespace" value="$(arg namespace)" />
+    <arg name="namespace"   value="$(arg namespace)" />
     <arg name="hydro_debug" value="$(arg hydro_debug)" />
-    <arg name="simulation" value="true" />
+    <arg name="simulation"  value="true" />
+    <arg name="config"      value="$(arg config)" />
   </include>
 
 </launch>
