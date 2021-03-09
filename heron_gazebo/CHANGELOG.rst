@@ -2,8 +2,8 @@
 Changelog for package heron_gazebo
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.3 (2021-03-09)
+------------------
 * Pass the config arg to the heron_description package correctly
 * Contributors: Chris Iverach-Brereton
 
