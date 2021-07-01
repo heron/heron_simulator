@@ -45,7 +45,7 @@ def translate():
 
     namespace = rospy.get_param("~namespace", "")
 
-    if namespace is "":
+    if namespace == "":
         namespace = "heron"
 
     p_left = rospy.Publisher("/" + namespace + "/thrusters/1/input", FloatStamped, queue_size=1)
