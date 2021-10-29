@@ -84,11 +84,10 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
             args="-urdf -x $(arg x) -y $(arg y) -z $(arg z) -R $(arg roll) -P $(arg pitch) -Y $(arg yaw) -model $(arg namespace) -param /$(arg namespace)/robot_description"/>
     </group>
 
-    <!-- Server for RViz Interactive Markers -->
-    <node pkg="interactive_marker_twist_server" type="marker_server" name="twist_marker_server">
-     <param name="link_name" value="$(arg namespace)/base_link" />
-     <remap from="twist_marker_server/cmd_vel" to="cmd_vel_unscaled" />
-    </node>
+    <include file="$(find heron_control)/launch/teleop.launch">
+      <arg name="joystick"  value="true" />
+      <arg name="namespace" value="$(arg namespace)" />
+    </include>
 
     <!-- Translate Twist message from twist_server to Wrench message -->
     <node pkg="heron_gazebo" type="twist_translate" name="twist_translate">
