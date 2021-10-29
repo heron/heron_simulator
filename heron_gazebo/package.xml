@@ -12,15 +12,21 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <run_depend>rospy</run_depend>
-  <run_depend>tf</run_depend>
-  <run_depend>nav_msgs</run_depend>
+
   <run_depend>geometry_msgs</run_depend>
-  <run_depend>sensor_msgs</run_depend>
-  <run_depend>uuv_gazebo_ros_plugins_msgs</run_depend>
   <run_depend>heron_msgs</run_depend>
-  <run_depend>interactive_marker_twist_server</run_depend>
+  <run_depend>nav_msgs</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+
+  <run_depend>gazebo_ros</run_depend>
   <run_depend>hector_gazebo_plugins</run_depend>
+  <run_depend>heron_description</run_depend>
+  <run_depend>heron_controller</run_depend>
+  <run_depend>imu_filter_madgwick</run_depend>
+  <run_depend>interactive_marker_twist_server</run_depend>
+  <run_depend>tf</run_depend>
   <run_depend>uuv_gazebo_worlds</run_depend>
+  <run_depend>uuv_gazebo_ros_plugins_msgs</run_depend>
 
   <export>
   </export>
