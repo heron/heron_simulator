@@ -27,6 +27,7 @@
   <run_depend>tf</run_depend>
   <run_depend>uuv_gazebo_worlds</run_depend>
   <run_depend>uuv_gazebo_ros_plugins_msgs</run_depend>
+  <run_depend>uuv_simulator</run_depend>
 
   <export>
   </export>
